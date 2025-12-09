@@ -167,7 +167,9 @@ def audit(domain: str = typer.Argument(..., callback=validate_domain)):
     console.print(f"Grade : {audit_data.get('grade', '-')}")
     console.print(f"Status: {audit_data.get('overall_status', '-')}")
 
-    # HSTS header section
+    # -------------------------
+    # HSTS header details
+    # -------------------------
     console.print("\n[bold]HSTS header:[/]")
     hsts = audit_data.get("hsts")
     if hsts and hsts.ok:
@@ -178,15 +180,20 @@ def audit(domain: str = typer.Argument(..., callback=validate_domain)):
     else:
         console.print("[red]No HSTS data returned[/]")
 
-    # Redirect section
+    # -------------------------
+    # Redirect details
+    # -------------------------
     console.print("\n[bold]Redirects:[/]")
-    redirects = audit_data.get("redirects", [])
-    for r in redirects:
+    redirects = audit_data.get("redirects", {})
+
+    for name, r in redirects.items():
         enforced = r.get("https_enforced", False)
         status = "[green]OK[/]" if enforced else "[yellow]Not enforced[/]"
-        console.print(f"{r.get('scenario')} -> {status}")
+        console.print(f"{name} -> {status}")
 
-    # Subdomain section
+    # -------------------------
+    # Subdomain details
+    # -------------------------
     console.print("\n[bold]Subdomain analysis:[/]")
     subdomains = audit_data.get("subdomains", [])
     for host, status, result in subdomains:
