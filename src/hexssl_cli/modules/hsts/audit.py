@@ -1,40 +1,73 @@
-from .parser import validate_hsts
-from .preload import get_preload_info
+from typing import List, Tuple, Dict, Any
+from .parser import validate_hsts, HSTSResult
 from .redirects import check_redirect_scenarios
 from .subdomains import check_subdomains
-from .scan import scan_paths
-from .utils import DEFAULT_TIMEOUT
 
-DEFAULT_PATHS = ["/", "/login", "/api", "/admin"]
 
-def run_full_audit(domain: str, timeout=DEFAULT_TIMEOUT):
+def run_full_audit(domain: str) -> Dict[str, Any]:
+    """
+    Perform a complete HSTS audit:
+    - Validate HSTS header on root path
+    - Check redirect scenarios
+    - Evaluate subdomains for HSTS coverage
+    """
+
+    result: Dict[str, Any] = {}
+
+    # -----------------------------------------
+    # 1. Root-level HSTS header
+    # -----------------------------------------
     try:
-        hsts_info, preload_info = get_preload_info(domain, timeout)
+        import requests
+        response = requests.get(f"https://{domain}", timeout=5)
+        hsts = validate_hsts(response.headers)
+        result["hsts"] = hsts
     except Exception as e:
-        return {"error": f"HSTS error: {e}"}
+        return {"error": f"HSTS root check failed: {str(e)}"}
 
-    redirects = check_redirect_scenarios(domain, timeout)
-    subs = check_subdomains(domain, timeout)
-    paths = scan_paths(domain, DEFAULT_PATHS, timeout)
+    # -----------------------------------------
+    # 2. Redirect scenarios
+    # -----------------------------------------
+    try:
+        redirects = check_redirect_scenarios(domain)
+        result["redirects"] = redirects
+    except Exception as e:
+        return {"error": f"Redirect analysis failed: {str(e)}"}
 
+    # -----------------------------------------
+    # 3. Subdomains HSTS evaluation
+    # -----------------------------------------
+    try:
+        subs = check_subdomains(domain)
+        result["subdomains"] = subs
+    except Exception as e:
+        return {"error": f"Subdomain analysis failed: {str(e)}"}
+
+    # -----------------------------------------
+    # Overall scoring
+    # -----------------------------------------
+
+    # Grade logic (simplified)
     grade = "A"
-    if not hsts_info.ok:
-        grade = "B"
-    if preload_info["status"] != "preloaded":
-        grade = "C"
-    if any(not r["https_enforced"] for r in redirects.values()):
-        grade = "D"
-   if any("error" in str(s[1]).lower() for s in subs):
-        grade = "D"
-    if any(isinstance(p[1], str) for p in paths):
-        grade = "E"
+    issues = []
 
-    return {
-        "hsts": hsts_info,
-        "preload": preload_info,
-        "redirects": redirects,
-        "subdomains": subs,
-        "paths": paths,
-        "grade": grade,
-        "overall_status": "ok" if grade in ["A", "B"] else "warning",
-    }
+    # HSTS issues
+    if isinstance(hsts, HSTSResult) and not hsts.ok:
+        grade = "C"
+        issues.extend(hsts.issues)
+
+    # Redirect issues
+    if any(not r.get("https_enforced", False) for r in redirects):
+        grade = "B"
+        issues.append("redirect_not_enforced")
+
+    # Subdomain issues
+    if any("error" in str(s[1]).lower() for s in subs):
+        grade = "B"
+        issues.append("subdomain_error")
+
+    result["grade"] = grade
+    result["overall_status"] = "ok" if grade == "A" else "issues"
+    result["issues"] = issues
+
+    return result
