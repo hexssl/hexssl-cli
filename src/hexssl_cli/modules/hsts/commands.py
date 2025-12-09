@@ -13,6 +13,10 @@ from .utils import validate_domain
 hsts_app = typer.Typer(help="HSTS diagnostics for HEXSSL-CLI")
 console = Console()
 
+
+# ----------------------------------------------------
+# CHECK
+# ----------------------------------------------------
 @hsts_app.command("check")
 def check(
     domain: str = typer.Argument(..., callback=validate_domain),
@@ -41,6 +45,10 @@ def check(
             console.print(f" - {issue}")
         raise typer.Exit(2)
 
+
+# ----------------------------------------------------
+# PRELOAD
+# ----------------------------------------------------
 @hsts_app.command("preload")
 def preload(domain: str = typer.Argument(..., callback=validate_domain)):
     console.print(f"[cyan]HEXSSL-CLI preload analysis for:[/] {domain}")
@@ -58,6 +66,10 @@ def preload(domain: str = typer.Argument(..., callback=validate_domain)):
 
     console.print(table)
 
+
+# ----------------------------------------------------
+# REDIRECTS
+# ----------------------------------------------------
 @hsts_app.command("redirects")
 def redirects(domain: str = typer.Argument(..., callback=validate_domain)):
     console.print(f"[cyan]HEXSSL-CLI redirect analysis for:[/] {domain}")
@@ -81,6 +93,10 @@ def redirects(domain: str = typer.Argument(..., callback=validate_domain)):
 
     console.print(table)
 
+
+# ----------------------------------------------------
+# PATH SCAN
+# ----------------------------------------------------
 @hsts_app.command("scan")
 def scan(
     domain: str = typer.Argument(..., callback=validate_domain),
@@ -105,6 +121,10 @@ def scan(
 
     console.print(table)
 
+
+# ----------------------------------------------------
+# SUBDOMAINS
+# ----------------------------------------------------
 @hsts_app.command("subdomains")
 def subdomains(domain: str = typer.Argument(..., callback=validate_domain)):
     console.print(f"[cyan]HEXSSL-CLI subdomain analysis for:[/] {domain}")
@@ -128,24 +148,53 @@ def subdomains(domain: str = typer.Argument(..., callback=validate_domain)):
 
     console.print(table)
 
+
+# ----------------------------------------------------
+# FULL AUDIT
+# ----------------------------------------------------
 @hsts_app.command("audit")
 def audit(domain: str = typer.Argument(..., callback=validate_domain)):
     console.print(f"[cyan]HEXSSL-CLI full HSTS audit for:[/] {domain}")
 
-result = run_full_audit(domain)
+    audit_data = run_full_audit(domain)
 
-    if "error" in audit:
-        console.print(f"[red]{audit['error']}[/]")
+    # Handle generic errors
+    if isinstance(audit_data, dict) and "error" in audit_data:
+        console.print(f"[red]{audit_data['error']}[/]")
         raise typer.Exit(1)
 
     console.print("\n[bold cyan]HEXSSL-CLI HSTS Audit Summary[/]")
-    console.print(f"Grade : {audit['grade']}")
-    console.print(f"Status: {audit['overall_status']}")
+    console.print(f"Grade : {audit_data.get('grade', '-')}")
+    console.print(f"Status: {audit_data.get('overall_status', '-')}")
 
+    # HSTS header section
     console.print("\n[bold]HSTS header:[/]")
-    hsts = audit["hsts"]
-    if hsts.ok:
+    hsts = audit_data.get("hsts")
+    if hsts and hsts.ok:
         console.print("[green]OK[/]")
-    else:
+    elif hsts:
         for issue in hsts.issues:
             console.print(f" - {issue}")
+    else:
+        console.print("[red]No HSTS data returned[/]")
+
+    # Redirect section
+    console.print("\n[bold]Redirects:[/]")
+    redirects = audit_data.get("redirects", [])
+    for r in redirects:
+        enforced = r.get("https_enforced", False)
+        status = "[green]OK[/]" if enforced else "[yellow]Not enforced[/]"
+        console.print(f"{r.get('scenario')} -> {status}")
+
+    # Subdomain section
+    console.print("\n[bold]Subdomain analysis:[/]")
+    subdomains = audit_data.get("subdomains", [])
+    for host, status, result in subdomains:
+        if status == "no_dns":
+            console.print(f"{host}: [yellow]no DNS[/]")
+        elif status == "error":
+            console.print(f"{host}: [red]{result}[/]")
+        elif isinstance(result, HSTSResult) and result.ok:
+            console.print(f"{host}: [green]OK[/]")
+        else:
+            console.print(f"{host}: [yellow]{', '.join(result.issues)}[/]")
