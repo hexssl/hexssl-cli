@@ -7,9 +7,9 @@ from .subdomains import check_subdomains
 def run_full_audit(domain: str) -> Dict[str, Any]:
     """
     Perform a complete HSTS audit:
-    - Validate HSTS header on root path
-    - Check redirect scenarios
-    - Evaluate subdomains for HSTS coverage
+    - Validate HSTS header on the root domain
+    - Evaluate redirect policy strictness
+    - Inspect subdomains for HSTS chain consistency
     """
 
     result: Dict[str, Any] = {}
@@ -35,7 +35,7 @@ def run_full_audit(domain: str) -> Dict[str, Any]:
         return {"error": f"Redirect analysis failed: {str(e)}"}
 
     # -----------------------------------------
-    # 3. Subdomains HSTS evaluation
+    # 3. Subdomains
     # -----------------------------------------
     try:
         subs = check_subdomains(domain)
@@ -44,27 +44,26 @@ def run_full_audit(domain: str) -> Dict[str, Any]:
         return {"error": f"Subdomain analysis failed: {str(e)}"}
 
     # -----------------------------------------
-    # Overall scoring
+    # 4. Scoring model
     # -----------------------------------------
 
-    # Grade logic (simplified)
     grade = "A"
     issues = []
 
-    # HSTS issues
+    # HSTS header score
     if isinstance(hsts, HSTSResult) and not hsts.ok:
-        grade = "C"
         issues.extend(hsts.issues)
+        grade = "C"
 
-    # Redirect issues
-    if any(not r.get("https_enforced", False) for r in redirects):
-        grade = "B"
+    # Redirect enforcement check
+    if any(not r.get("https_enforced", False) for r in redirects.values()):
         issues.append("redirect_not_enforced")
+        grade = "B"
 
     # Subdomain issues
-    if any("error" in str(s[1]).lower() for s in subs):
-        grade = "B"
+    if any(s[1] == "error" for s in subs):
         issues.append("subdomain_error")
+        grade = "B"
 
     result["grade"] = grade
     result["overall_status"] = "ok" if grade == "A" else "issues"
