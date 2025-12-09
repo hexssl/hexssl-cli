@@ -2,10 +2,6 @@
 
 Official HEXSSL command-line toolkit for advanced web security diagnostics.
 
-# ![PyPI](https://img.shields.io/pypi/v/hexssl-cli)
-# ![Downloads](https://img.shields.io/pypi/dm/hexssl-cli)
-# ![Python](https://img.shields.io/pypi/pyversions/hexssl-cli)
-# ![License](https://img.shields.io/github/license/hexssl/hexssl-cli)
 
 ## 🚀 Overview
 
