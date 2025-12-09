@@ -1,0 +1,44 @@
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Build artifacts
+build/
+dist/
+*.egg-info/
+*.egg
+
+# IDE / Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# macOS files
+.DS_Store
+
+# MkDocs (if built locally)
+site/
+
+# Logs
+*.log
+
+# Coverage / pytest
+.coverage
+htmlcov/
+.cache/
+
+# PyInstaller
+*.spec
+
+# Local configuration overrides
+*.env
+.env*
+

@@ -1,0 +1,16 @@
+{
+    "types": [
+      { "type": "feat", "section": "Features" },
+      { "type": "fix", "section": "Bug Fixes" },
+      { "type": "perf", "section": "Performance" },
+      { "type": "refactor", "section": "Refactoring" },
+      { "type": "docs", "section": "Documentation" },
+      { "type": "chore", "section": "Maintenance" }
+    ],
+    "commitUrlFormat": "https://github.com/hexssl/hexssl-cli/commit/{{hash}}",
+    "compareUrlFormat": "https://github.com/hexssl/hexssl-cli/compare/{{previousTag}}...{{currentTag}}",
+    "issueUrlFormat": "https://github.com/hexssl/hexssl-cli/issues/{{id}}",
+    "userUrlFormat": "https://github.com/{{user}}",
+    "releaseCommitMessageFormat": "chore(release): {{currentTag}}"
+  }
+  

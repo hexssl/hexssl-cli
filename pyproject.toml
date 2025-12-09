@@ -1,0 +1,29 @@
+[project]
+name = "hexssl-cli"
+version = "0.1.0"
+description = "HEXSSL-CLI • Official HEXSSL command-line toolkit for SSL, HSTS and web security diagnostics."
+readme = "README.md"
+license = { file = "LICENSE" }
+authors = [
+  { name="HEXSSL", email="sales@hexssl.com" }
+]
+requires-python = ">=3.9"
+keywords = ["ssl", "tls", "hsts", "security", "cli", "hexssl"]
+
+dependencies = [
+  "typer>=0.9.0",
+  "rich>=13.0.0",
+  "requests>=2.31.0",
+  "idna>=3.3"
+]
+
+[project.urls]
+Homepage = "https://www.hexssl.com"
+Repository = "https://github.com/hexssl/hexssl-cli"
+
+[project.scripts]
+hexssl-cli = "hexssl_cli.cli:app"
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"

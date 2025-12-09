@@ -1,0 +1,33 @@
+name: Generate Changelog
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+jobs:
+  changelog:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install standard-version
+        run: |
+          npm install -g standard-version
+
+      - name: Generate changelog
+        run: |
+          standard-version --release-as ${GITHUB_REF#refs/tags/}
+
+      - name: Push updated changelog
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git push --follow-tags

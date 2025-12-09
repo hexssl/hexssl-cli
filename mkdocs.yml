@@ -1,0 +1,27 @@
+site_name: HEXSSL-CLI Documentation
+site_url: https://www.hexssl.com/
+theme:
+  name: material
+  palette:
+    scheme: slate
+    primary: cyan
+    accent: indigo
+
+repo_url: https://github.com/hexssl/hexssl-cli
+repo_name: hexssl-cli
+
+nav:
+  - Home: index.md
+  - Installation: installation.md
+  - Usage: usage.md
+  - Modules:
+      - HSTS: modules/hsts.md
+
+markdown_extensions:
+  - toc:
+      permalink: true
+  - admonition
+  - codehilite
+  - tables
+  - footnotes
+  - attr_list
