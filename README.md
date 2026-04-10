@@ -147,7 +147,6 @@ Summary: Mail trust records need corrective action.
 | 11   | Network or timeout error             |
 | 12   | Parsing or validation error          |
 
-> If your current implementation uses a different exit-code mapping for legacy HSTS commands, document those differences explicitly here or align them in a future cleanup.
 
 ---
 
