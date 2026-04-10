@@ -1,21 +1,22 @@
 # HEXSSL-CLI
 
-Official HEXSSL command-line toolkit for advanced web security diagnostics.
-
+Official HEXSSL command-line toolkit for trust, TLS, certificate, DNS, and mail security diagnostics.
 
 ## 🚀 Overview
 
 HEXSSL-CLI provides fast, automation-friendly diagnostics for:
 
-- TLS certificate inspection
-- HSTS header correctness
-- Chrome preload eligibility
-- HTTP → HTTPS redirect enforcement
-- Subdomain consistency
-- Multi-path HSTS scanning
-- Full audit with grading (A–F)
+* TLS certificate inspection
+* DNS validation
+* mail trust validation
+* HSTS header correctness
+* Chrome preload eligibility
+* HTTP → HTTPS redirect enforcement
+* subdomain consistency
+* multi-path HSTS scanning
+* full audit with grading (A–F)
 
-Designed for sysadmins, DevOps/SRE, security engineers and CI/CD usage.
+Designed for sysadmins, DevOps/SRE, security engineers, hosting providers, MSPs, and CI/CD usage.
 
 ---
 
@@ -23,13 +24,17 @@ Designed for sysadmins, DevOps/SRE, security engineers and CI/CD usage.
 
 ### From PyPI
 
-    pip install hexssl-cli
+```bash
+pip install hexssl-cli
+```
 
 ### From source
 
-    git clone https://github.com/hexssl/hexssl-cli.git
-    cd hexssl-cli
-    pip install .
+```bash
+git clone https://github.com/hexssl/hexssl-cli.git
+cd hexssl-cli
+pip install .
+```
 
 ---
 
@@ -37,92 +42,143 @@ Designed for sysadmins, DevOps/SRE, security engineers and CI/CD usage.
 
 ### Certificate check
 
-    hexssl-cli cert check example.com
+```bash
+hexssl-cli cert check example.com
+```
 
 ### Certificate check as JSON
 
-    hexssl-cli cert check example.com --json
+```bash
+hexssl-cli cert check example.com --json
+```
 
 ### DNS check
 
-    hexssl-cli dns check example.com
+```bash
+hexssl-cli dns check example.com
+```
 
 ### DNS check as JSON
 
-    hexssl-cli dns check example.com --json
+```bash
+hexssl-cli dns check example.com --json
+```
+
+### Mail trust check
+
+```bash
+hexssl-cli mail check example.com --selector default
+```
+
+### Mail trust check as JSON
+
+```bash
+hexssl-cli mail check example.com --selector default --json
+```
 
 ### HSTS header check
 
-    hexssl-cli hsts check example.com
+```bash
+hexssl-cli hsts check example.com
+```
 
 ### Preload analysis
 
-    hexssl-cli hsts preload example.com
+```bash
+hexssl-cli hsts preload example.com
+```
 
 ### Redirect chain evaluation
 
-    hexssl-cli hsts redirects example.com
+```bash
+hexssl-cli hsts redirects example.com
+```
 
 ### Multi-path scan
 
-    hexssl-cli hsts scan example.com --paths "/,/login,/api,/admin"
+```bash
+hexssl-cli hsts scan example.com --paths "/,/login,/api,/admin"
+```
 
 ### Full audit
 
-    hexssl-cli hsts audit example.com
+```bash
+hexssl-cli hsts audit example.com
+```
 
 ---
 
 ## 📊 Output Preview
 
-    HEXSSL-CLI full HSTS audit for: example.com
+### Certificate check
 
-    Grade : B
-    Status: ok
+```text
+HEXSSL-CLI certificate check for: example.com
+Status : OK
+Summary: Certificate is valid for the requested host.
+```
 
-    HSTS header:
-      - max-age OK
-      - includeSubDomains OK
-      - preload missing
+### DNS check
+
+```text
+HEXSSL-CLI DNS check for: example.com
+Status : WARNING
+Summary: DNS records are present, but there are hardening gaps.
+```
+
+### Mail trust check
+
+```text
+HEXSSL-CLI mail check for: example.com
+Status : FAIL
+Summary: Mail trust records need corrective action.
+```
 
 ---
 
 ## ⚙️ Exit Codes
 
-| Code | Meaning |
-|------|---------|
-| 0    | OK |
-| 1    | TLS or connection error |
-| 2    | Validation issues detected |
-| 3    | Audit warnings |
-| 4    | Fatal error |
+| Code | Meaning                              |
+| ---- | ------------------------------------ |
+| 0    | OK                                   |
+| 1    | Warning / issues detected            |
+| 2    | Failure / corrective action required |
+| 10   | Input or usage error                 |
+| 11   | Network or timeout error             |
+| 12   | Parsing or validation error          |
+
+> If your current implementation uses a different exit-code mapping for legacy HSTS commands, document those differences explicitly here or align them in a future cleanup.
 
 ---
 
 ## 🧱 Project Structure
 
-    hexssl-cli/
-    └── src/hexssl_cli/
-        ├── cli.py
-        ├── core/
-        └── modules/
-            ├── cert/
-            ├── dns/
-            └── hsts/
+```text
+hexssl-cli/
+└── src/hexssl_cli/
+    ├── cli.py
+    ├── core/
+    └── modules/
+        ├── cert/
+        ├── dns/
+        ├── hsts/
+        ├── mail/
+        └── report/
+```
 
 ---
 
 ## 📘 Documentation
 
-Full documentation is available in the `docs/` directory (MkDocs Material).
+Full documentation is available in the `docs/` directory.
 
 ---
 
 ## 🌐 Links
 
-- Website: https://www.hexssl.com
-- GitHub: https://github.com/hexssl/hexssl-cli
-- Contact: sales@hexssl.com
+* Website: https://www.hexssl.com
+* GitHub: https://github.com/hexssl/hexssl-cli
+* Contact: [sales@hexssl.com](mailto:sales@hexssl.com)
 
 ---
 
