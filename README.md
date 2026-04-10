@@ -7,6 +7,7 @@ Official HEXSSL command-line toolkit for advanced web security diagnostics.
 
 HEXSSL-CLI provides fast, automation-friendly diagnostics for:
 
+- TLS certificate inspection
 - HSTS header correctness
 - Chrome preload eligibility
 - HTTP → HTTPS redirect enforcement
@@ -33,6 +34,14 @@ Designed for sysadmins, DevOps/SRE, security engineers and CI/CD usage.
 ---
 
 ## 🔧 Usage Examples
+
+### Certificate check
+
+    hexssl-cli cert check example.com
+
+### Certificate check as JSON
+
+    hexssl-cli cert check example.com --format json
 
 ### HSTS header check
 
@@ -76,7 +85,7 @@ Designed for sysadmins, DevOps/SRE, security engineers and CI/CD usage.
 |------|---------|
 | 0    | OK |
 | 1    | TLS or connection error |
-| 2    | HSTS issues detected |
+| 2    | Validation issues detected |
 | 3    | Audit warnings |
 | 4    | Fatal error |
 
@@ -87,7 +96,10 @@ Designed for sysadmins, DevOps/SRE, security engineers and CI/CD usage.
     hexssl-cli/
     └── src/hexssl_cli/
         ├── cli.py
+        ├── core/
         └── modules/
+            ├── cert/
+            ├── dns/
             └── hsts/
 
 ---
