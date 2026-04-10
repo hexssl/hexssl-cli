@@ -43,6 +43,14 @@ Designed for sysadmins, DevOps/SRE, security engineers and CI/CD usage.
 
     hexssl-cli cert check example.com --json
 
+### DNS check
+
+    hexssl-cli dns check example.com
+
+### DNS check as JSON
+
+    hexssl-cli dns check example.com --json
+
 ### HSTS header check
 
     hexssl-cli hsts check example.com
