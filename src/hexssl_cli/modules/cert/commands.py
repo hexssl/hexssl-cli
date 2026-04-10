@@ -26,8 +26,9 @@ def check(
     target: str = typer.Argument(..., callback=validate_domain),
     timeout: float = typer.Option(5.0, help="Socket timeout in seconds"),
     output: str = typer.Option("text", "--format", help="Output format: text or json"),
+    json_output: bool = typer.Option(False, "--json", help="Emit JSON output"),
 ):
-    output = output.lower()
+    output = "json" if json_output else output.lower()
     if output not in {"text", "json"}:
         raise typer.BadParameter("Output format must be 'text' or 'json'")
 

@@ -41,7 +41,7 @@ Designed for sysadmins, DevOps/SRE, security engineers and CI/CD usage.
 
 ### Certificate check as JSON
 
-    hexssl-cli cert check example.com --format json
+    hexssl-cli cert check example.com --json
 
 ### HSTS header check
 
