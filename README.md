@@ -43,6 +43,14 @@ Designed for sysadmins, DevOps/SRE, security engineers and CI/CD usage.
 
     hexssl-cli cert check example.com --json
 
+### Mail trust check
+
+    hexssl-cli mail check example.com --selector default
+
+### Mail trust check as JSON
+
+    hexssl-cli mail check example.com --selector default --json
+
 ### HSTS header check
 
     hexssl-cli hsts check example.com
