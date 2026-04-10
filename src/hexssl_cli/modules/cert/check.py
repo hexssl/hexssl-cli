@@ -86,7 +86,7 @@ def _validate_hostname(cert: Dict[str, object], hostname: str) -> Tuple[bool, Op
         ssl.match_hostname(cert, hostname)
         return True, None
     except ssl.CertificateError as exc:
-        return False, str(exc)
+        return False, _format_certificate_error(exc)
 
 
 def _flatten_name(items: tuple) -> str:
@@ -107,3 +107,14 @@ def _parse_not_after(value: str) -> Optional[datetime]:
         return None
 
     return parsed.replace(tzinfo=timezone.utc)
+
+
+def _format_certificate_error(exc: ssl.CertificateError) -> str:
+    if exc.args and isinstance(exc.args[0], str) and exc.args[0]:
+        return exc.args[0]
+
+    parts = [str(part) for part in exc.args if str(part)]
+    if parts:
+        return ": ".join(parts)
+
+    return "Hostname validation failed."
